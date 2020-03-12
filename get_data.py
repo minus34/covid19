@@ -3,14 +3,14 @@
 
 import requests
 
-
-def get_data():
-
-	files = [
+files = [
 			"time_series_19-covid-Confirmed.csv",
 			"time_series_19-covid-Deaths.csv",
 			"time_series_19-covid-Recovered.csv"
 			]
+
+
+def get_data():
 
 	headers = {'Accept': 'application/vnd.github.v3.raw'}
 

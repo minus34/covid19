@@ -20,6 +20,8 @@ for filename in files:
     with open(filename, "r") as f:
         reader = csv.reader(f, delimiter=',')
 
+        status = filename.replace(".csv", "").split("-")[2].lower()
+
         i = 0
         dates = list()
 
@@ -37,6 +39,7 @@ for filename in files:
                 for date in dates:
                     row_dict = dict()
 
+                    row_dict["status"] = status
                     row_dict["province_state"] = row[0]
                     row_dict["country_region"] = row[1]
                     row_dict["latitude"] = float(row[2])
@@ -52,4 +55,3 @@ for filename in files:
 
                     j += 1
             i += 1
-
