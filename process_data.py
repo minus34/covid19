@@ -3,8 +3,7 @@ import csv
 
 from datetime import datetime
 from get_data import get_data
-
-# get_data()
+get_data()
 
 files = [
     "time_series_19-covid-Confirmed.csv",
@@ -48,10 +47,25 @@ for filename in files:
                     # convert date to standard format
                     the_date = datetime.strptime(date, '%m/%d/%y')
 
-                    row_dict["the_date"] = the_date
+                    row_dict["date"] = the_date
                     row_dict["persons"] = int(values[j])
 
                     dict_list.append(row_dict)
 
                     j += 1
             i += 1
+
+print("Files parsed into dictionary list")
+
+# export dict list to CSV
+csv_columns = ["status", "province_state", "country_region", "latitude", "longitude", "date", "persons"]
+
+with open("time_series_19-covid-reformatted.csv", 'w') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+    writer.writeheader()
+    for data in dict_list:
+        writer.writerow(data)
+
+print("Data exported to CSV")
+
+# TODO: export to postgres
