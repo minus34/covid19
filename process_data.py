@@ -47,7 +47,7 @@ for filename in files:
                     # convert date to standard format
                     the_date = datetime.strptime(date, '%m/%d/%y')
 
-                    row_dict["date"] = the_date
+                    row_dict["the_date"] = the_date
                     row_dict["persons"] = int(values[j])
 
                     dict_list.append(row_dict)
@@ -58,7 +58,7 @@ for filename in files:
 print("Files parsed into dictionary list")
 
 # export dict list to CSV
-csv_columns = ["status", "province_state", "country_region", "latitude", "longitude", "date", "persons"]
+csv_columns = ["status", "province_state", "country_region", "latitude", "longitude", "the_date", "persons"]
 
 with open("time_series_19-covid-reformatted.csv", 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
