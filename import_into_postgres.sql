@@ -109,24 +109,17 @@ update covid19.countries set country_region = 'Iran, Islamic Rep.' where country
 update covid19.countries set country_region = 'Egypt, Arab Rep.' where country_region = 'Egypt';
 update covid19.countries set country_region = 'Russian Federation' where country_region = 'Russia';
 update covid19.countries set country_region = 'Czech Republic' where country_region = 'Czechia';
---update covid19.countries set country_region =  where country_region = ;
+update covid19.countries set country_region = 'Slovak Republic' where country_region = 'Slovakia';
+
+update covid19.countries set population = 859959, population_year = 2020 where country_region = 'Reunion';
+update covid19.countries set population = 376480, population_year = 2016 where country_region = 'Martinique';
+update covid19.countries set population = 23780000, population_year = 2018 where country_region = 'Taiwan*';
+update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
+update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
+
+delete from covid19.countries where country_region = 'Cruise Ship';
 
 analyse covid19.countries;
-
---'Slovakia'
---'Cruise Ship'
---'Martinique'
---'Reunion'
---'Taiwan*'
---'Holy See'
---'French Guiana'
-
-
---select *
---from covid19.world_population
---where country_name like '%Taiwan%'
---and year = 2018
---;;
 
 
 --select * from covid19.countries
