@@ -118,7 +118,7 @@ update covid19.countries set population = 23780000, population_year = 2018 where
 update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
 update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
 
--- fix France's coords and geom
+-- fix coords and geoms of countries with territories that skew their centroid
 update covid19.countries
     set latitude = 47.2,
         longitude = 3.0,
