@@ -84,8 +84,12 @@ select country_region,
        sum(recovered) as recovered,
        sum(active) as active,
        null::integer as population,
+       null::float as confirmed_percent,
+       null::float as deaths_percent,
+       null::float as recovered_percent,
+       null::float as active_percent,
        null::smallint as population_year,
-	   avg(latitude)::numeric(8,6) as latitude,
+       avg(latitude)::numeric(8,6) as latitude,
 	   avg(longitude)::numeric(9,6) as longitude,
 	   ST_SetSRID(ST_Makepoint(avg(longitude), avg(latitude)), 4326) as geom
 from merge
@@ -95,6 +99,34 @@ group by country_region
 ALTER TABLE covid19.countries ADD CONSTRAINT countries_pkey PRIMARY KEY (country_region);
 CREATE INDEX countries_geom_idx ON covid19.countries USING gist (geom);
 ALTER TABLE covid19.countries CLUSTER ON countries_geom_idx;
+
+-- update country names to match World Bank names
+update covid19.countries set country_region = 'Brunei Darussalam' where country_region = 'Brunei';
+update covid19.countries set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Kinshasa)';
+update covid19.countries set country_region = 'Korea, Rep.' where country_region = 'Korea, South';
+update covid19.countries set country_region = 'United States' where country_region = 'US';
+update covid19.countries set country_region = 'Iran, Islamic Rep.' where country_region = 'Iran';
+update covid19.countries set country_region = 'Egypt, Arab Rep.' where country_region = 'Egypt';
+update covid19.countries set country_region = 'Russian Federation' where country_region = 'Russia';
+update covid19.countries set country_region = 'Czech Republic' where country_region = 'Czechia';
+--update covid19.countries set country_region =  where country_region = ;
+
+analyse covid19.countries;
+
+--'Slovakia'
+--'Cruise Ship'
+--'Martinique'
+--'Reunion'
+--'Taiwan*'
+--'Holy See'
+--'French Guiana'
+
+
+--select *
+--from covid19.world_population
+--where country_name like '%Taiwan%'
+--and year = 2018
+--;;
 
 
 --select * from covid19.countries
@@ -141,32 +173,13 @@ with latest as (
 )
 update covid19.countries as co
 	set population = pop.population,
-	    population_year = pop.year
+	    population_year = pop.year,
+	    confirmed_percent = co.confirmed::float / pop.population:: float * 100.0,
+	    deaths_percent = co.deaths::float / pop.population:: float * 100.0,
+	    recovered_percent = co.recovered::float / pop.population:: float * 100.0,
+	    active_percent = co.active::float / pop.population:: float * 100.0
 from pop
 where co.country_region = pop.country_name
 ;
 
-select * from covid19.countries where population is null;
-
-
-"Brunei" "Brunei Darussalam"
-"Slovakia"
-"Cruise Ship"
-"Martinique"
-"Reunion"
-"Congo (Kinshasa)" "Congo, Dem. Rep."
-"Taiwan*"
-"Korea, South" "Korea, Rep."
-"US" "United States"
-"Holy See"
-"Egypt" "Egypt, Arab Rep."
-"Iran" "Iran, Islamic Rep."
-"Russia" "Russian Federation"
-"French Guiana"
-"Czechia" "Czech Republic"
-
-select *
-from covid19.world_population
-where country_name like '%Taiwan%'
-and year = 2018
-;;
+--select * from covid19.countries where population is null;
