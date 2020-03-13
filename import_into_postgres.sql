@@ -19,7 +19,7 @@ FROM '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-reformatted.
 
 ANALYSE covid19.raw_cases;
 
-
+-- flip data to have values in status columns
 DROP TABLE IF EXISTS covid19.cases;
 CREATE TABLE covid19.cases AS
 with confirmed as (
@@ -39,7 +39,7 @@ with confirmed as (
 		   sum(case when status = 'deaths' then persons else 0 end) as deaths,
 		   sum(case when status = 'recovered' then persons else 0 end )as recovered
 	from covid19.raw_cases as cases
-	inner join confirmed on cases.province_state = confirmed.province_state
+	inner join confirmed on cases.province_state IS NOT DISTINCT FROM confirmed.province_state  -- handle NULLS in join
 		and cases.country_region = confirmed.country_region
 	    and cases.the_date = confirmed.the_date
 	group by cases.province_state,
@@ -72,7 +72,7 @@ WITH latest as (
 ), merge as (
     select cases.*
     from covid19.cases
-    inner join latest on cases.province_state = latest.province_state
+    inner join latest on cases.province_state IS NOT DISTINCT FROM latest.province_state  -- handle NULLS in join
             and cases.country_region = latest.country_region
             and cases.the_date = latest.max_date
 )
@@ -83,12 +83,19 @@ select country_region,
        sum(deaths) as deaths,
        sum(recovered) as recovered,
        sum(active) as active,
-	   avg(latitude) as latitude,
-	   avg(longitude) as longitude,
+	   avg(latitude)::numeric(8,6) as latitude,
+	   avg(longitude)::numeric(9,6) as longitude,
 	   ST_SetSRID(ST_Makepoint(avg(longitude), avg(latitude)), 4326) as geom
 from merge
 group by country_region
 ;
+
+
+select * from covid19.countries
+order by country_region;
+
+
+
 
 
 
