@@ -1,5 +1,5 @@
 # This script will get the latest data from the Jons Hopkins GitHub repo https://github.com/CSSEGISandData
-# code from Nick Evershed, The Guardian Australia
+# code adapted from Nick Evershed's (The Guardian Australia) repo: https://github.com/guardian/coronavirus-live-data
 
 import os
 import requests
