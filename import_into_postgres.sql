@@ -92,7 +92,7 @@ from merge
 group by country_region
 ;
 
-ALTER TABLE covid19.countries ADD CONSTRAINT countries_pkey PRIMARY KEY (country_region)
+ALTER TABLE covid19.countries ADD CONSTRAINT countries_pkey PRIMARY KEY (country_region);
 CREATE INDEX countries_geom_idx ON covid19.countries USING gist (geom);
 ALTER TABLE covid19.countries CLUSTER ON countries_geom_idx;
 
@@ -119,7 +119,7 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 delete from covid19.world_population where population is null;
 
-ALTER TABLE covid19.world_population ADD CONSTRAINT world_population_pkey PRIMARY KEY (country_name, year)
+ALTER TABLE covid19.world_population ADD CONSTRAINT world_population_pkey PRIMARY KEY (country_name, year);
 
 analyse covid19.world_population;
 -- vacuum analyse covid19.world_population;
@@ -128,6 +128,45 @@ analyse covid19.world_population;
 --order by population desc;
 
 
+with latest as (
+    select country_name,
+           max(year) as max_year
+    from covid19.world_population
+    group by country_name
+), pop as (
+	select wb.*
+	from covid19.world_population as wb
+	inner join latest on wb.country_name = latest.country_name
+		and wb.year = latest.max_year
+)
+update covid19.countries as co
+	set population = pop.population,
+	    population_year = pop.year
+from pop
+where co.country_region = pop.country_name
+;
+
+select * from covid19.countries where population is null;
 
 
+"Brunei" "Brunei Darussalam"
+"Slovakia"
+"Cruise Ship"
+"Martinique"
+"Reunion"
+"Congo (Kinshasa)" "Congo, Dem. Rep."
+"Taiwan*"
+"Korea, South" "Korea, Rep."
+"US" "United States"
+"Holy See"
+"Egypt" "Egypt, Arab Rep."
+"Iran" "Iran, Islamic Rep."
+"Russia" "Russian Federation"
+"French Guiana"
+"Czechia" "Czech Republic"
 
+select *
+from covid19.world_population
+where country_name like '%Taiwan%'
+and year = 2018
+;;
