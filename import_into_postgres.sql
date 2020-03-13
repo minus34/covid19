@@ -111,11 +111,32 @@ update covid19.countries set country_region = 'Russian Federation' where country
 update covid19.countries set country_region = 'Czech Republic' where country_region = 'Czechia';
 update covid19.countries set country_region = 'Slovak Republic' where country_region = 'Slovakia';
 
+-- manually set populations
 update covid19.countries set population = 859959, population_year = 2020 where country_region = 'Reunion';
 update covid19.countries set population = 376480, population_year = 2016 where country_region = 'Martinique';
 update covid19.countries set population = 23780000, population_year = 2018 where country_region = 'Taiwan*';
 update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
 update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
+
+-- fix France's coords and geom
+update covid19.countries
+    set latitude = 47.2,
+        longitude = 3.0,
+        geom = ST_SetSRID(ST_Makepoint(3.0, 47.2), 4326)
+where country_region = 'France';
+
+update covid19.countries
+    set latitude = 54.0,
+        longitude = -2.0,
+        geom = ST_SetSRID(ST_Makepoint(-2.0, 54.0), 4326)
+where country_region = 'United Kingdom';
+
+update covid19.countries
+    set latitude = 56.0,
+        longitude = 9.3,
+        geom = ST_SetSRID(ST_Makepoint(9.3, 56.0), 4326)
+where country_region = 'Denmark';
+
 
 delete from covid19.countries where country_region = 'Cruise Ship';
 
@@ -153,6 +174,7 @@ analyse covid19.world_population;
 --order by population desc;
 
 
+-- get population and normalised infection rates
 with latest as (
     select country_name,
            max(year) as max_year
