@@ -1,6 +1,6 @@
 
 -- CREATE SCHEMA covid19;
--- CREATE EXTENSION postgis;
+-- CREATE EXTENSION postgis;README.md
 
 -- load JHU COVID-19 case data
 
