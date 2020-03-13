@@ -1,5 +1,8 @@
 
--- load COVID-19 case data
+-- CREATE SCHEMA covid19;
+-- CREATE EXTENSION postgis;
+
+-- load JHU COVID-19 case data
 
 DROP TABLE IF EXISTS covid19.raw_cases;
 CREATE TABLE covid19.raw_cases
@@ -52,12 +55,7 @@ select *,
        confirmed - deaths - recovered as active,
 	   ST_SetSRID(ST_Makepoint(longitude, latitude), 4326) as geom
 from merge
--- where province_state = 'King County, WA'
 order by the_date desc;
-
-
-
---select * from covid19.cases where province_state = 'King County, WA' order by the_date desc;
 
 
 DROP TABLE IF EXISTS covid19.countries;
