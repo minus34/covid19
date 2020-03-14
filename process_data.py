@@ -136,20 +136,26 @@ with open("world-bank-population-reformatted.csv", 'w') as csvfile:
 
 # OPTIONAL: import data into Postgres
 
-# import psycopg2
-#
-# pg_connect_string = "dbname='geo' host='localhost' port='5432' user='postgres' password='password'"
-#
-# pg_conn = psycopg2.connect(pg_connect_string)
-# pg_conn.autocommit = True
-# pg_cur = pg_conn.cursor()
-#
-# # import data and aggregate by country
-# sql = open("import_into_postgres.sql", "r").read()
-# pg_cur.execute(sql)
-#
-# print("Data imported into postgres and aggregate tables created")
-#
-# # close Postgres connection
-# pg_cur.close()
-# pg_conn.close()
+import psycopg2
+
+pg_connect_string = "dbname='geo' host='localhost' port='5432' user='postgres' password='password'"
+
+pg_conn = psycopg2.connect(pg_connect_string)
+pg_conn.autocommit = True
+pg_cur = pg_conn.cursor()
+
+# import data
+sql = open("import_into_postgres.sql", "r").read()
+pg_cur.execute(sql)
+
+print("Data imported into postgres")
+
+# aggregate data by country and add population data
+sql = open("aggregate_by_country.sql", "r").read()
+pg_cur.execute(sql)
+
+print("Country table created with cases and population data")
+
+# close Postgres connection
+pg_cur.close()
+pg_conn.close()
