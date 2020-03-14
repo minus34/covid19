@@ -130,6 +130,18 @@ ALTER TABLE covid19.countries_current CLUSTER ON countries_current_geom_idx;
 ANALYSE covid19.countries_current;
 
 
+-- update all country coordinates to their current coords
+-- fixes quirk where country coords jump between dates when cases change counts
+update covid19.countries as cnt
+    set latitude = curr.latitude,
+        longitude = curr.longitude,
+		geom = curr.geom
+from covid19.countries_current as curr
+where cnt.country_region = curr.country_region;
+
+analyse covid19.countries;
+
+
 -- output to CSVs
 
 COPY covid19.countries
