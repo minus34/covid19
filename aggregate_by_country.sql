@@ -112,99 +112,16 @@ where co.country_region = pop.country_name
 --select * from covid19.countries where population is null;
 
 
+-- get current data by country
+DROP TABLE IF EXISTS covid19.countries_current;
+CREATE TABLE covid19.countries_current AS
+select *
+from covid19.countries
+where the_date = max_date
+;
 
+ALTER TABLE covid19.countries_current ADD CONSTRAINT countries_current_pkey PRIMARY KEY (country_region);
+CREATE INDEX countries_current_geom_idx ON covid19.countries_current USING gist (geom);
+ALTER TABLE covid19.countries_current CLUSTER ON countries_current_geom_idx;
 
-
-
-
-
---DROP TABLE IF EXISTS covid19.countries;
---CREATE TABLE covid19.countries AS
---WITH latest as (
---    select province_state,
---		   country_region,
---		   max(the_date) as max_date
---    from covid19.cases
---	group by province_state,
---		     country_region
---), merge as (
---    select cases.*
---    from covid19.cases
---    inner join latest on cases.province_state IS NOT DISTINCT FROM latest.province_state  -- handle NULLS in join
---            and cases.country_region = latest.country_region
---            and cases.the_date = latest.max_date
---)
---select country_region,
---       min(the_date) as min_date,
---       max(the_date) as max_date,
---       sum(confirmed) as confirmed,
---       sum(deaths) as deaths,
---       sum(recovered) as recovered,
---       sum(active) as active,
---       null::integer as population,
---       null::float as confirmed_percent,
---       null::float as deaths_percent,
---       null::float as recovered_percent,
---       null::float as active_percent,
---       null::smallint as population_year,
---       avg(latitude)::numeric(8,6) as latitude,
---	   avg(longitude)::numeric(9,6) as longitude,
---	   ST_SetSRID(ST_Makepoint(avg(longitude), avg(latitude)), 4326) as geom
---from merge
---group by country_region
---;
---
---ALTER TABLE covid19.countries ADD CONSTRAINT countries_pkey PRIMARY KEY (country_region);
---CREATE INDEX countries_geom_idx ON covid19.countries USING gist (geom);
---ALTER TABLE covid19.countries CLUSTER ON countries_geom_idx;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---DROP TABLE IF EXISTS covid19.countries_start_date;
---CREATE TABLE covid19.countries_start_date AS
---WITH fst as (
---    select country_region,
---		   min(the_date) as start_date
---    from covid19.cases
---	where confirmed > 0
---	group by country_region
---), merge as (
---    select cnty.*,
---		   fst.start_date
---    from covid19.countries as cnty
---    inner join fst on cnty.country_region = fst.country_region
---            and cnty.the_date >= fst.start_date
---)
---select country_region,
---       the_date - start_date as days,
---       the_date,
---       confirmed,
---       deaths,
---       recovered,
---       active,
---       latitude,
---	   longitude,
---	   ST_SetSRID(ST_Makepoint(longitude, latitude), 4326) as geom
---from merge
---;
---
---ALTER TABLE covid19.countries_start_date ADD CONSTRAINT countries_start_date_pkey PRIMARY KEY (country_region, the_date);
---CREATE INDEX countries_start_date_geom_idx ON covid19.countries_start_date USING gist (geom);
---ALTER TABLE covid19.countries_start_date CLUSTER ON countries_start_date_geom_idx;
+ANALYSE covid19.countries_current;
