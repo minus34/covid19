@@ -100,16 +100,19 @@ with latest as (
 )
 update covid19.countries as co
 	set population = pop.population,
-	    population_year = pop.year,
-	    confirmed_percent = co.confirmed::float / pop.population:: float * 100.0,
-	    deaths_percent = co.deaths::float / pop.population:: float * 100.0,
-	    recovered_percent = co.recovered::float / pop.population:: float * 100.0,
-	    active_percent = co.active::float / pop.population:: float * 100.0
+	    population_year = pop.year
 from pop
 where co.country_region = pop.country_name
 ;
 
 --select * from covid19.countries where population is null;
+
+-- get percentages of infection
+update covid19.countries
+    set confirmed_percent = confirmed::float / population:: float * 100.0,
+	    deaths_percent = deaths::float / population:: float * 100.0,
+	    recovered_percent = recovered::float / population:: float * 100.0,
+	    active_percent = active::float / population:: float * 100.0;
 
 
 -- get current data by country
@@ -125,3 +128,14 @@ CREATE INDEX countries_current_geom_idx ON covid19.countries_current USING gist 
 ALTER TABLE covid19.countries_current CLUSTER ON countries_current_geom_idx;
 
 ANALYSE covid19.countries_current;
+
+
+-- output to CSVs
+
+COPY covid19.countries
+TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country.csv'
+WITH (HEADER, DELIMITER ',', FORMAT CSV);
+
+COPY covid19.countries_current
+TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-current.csv'
+WITH (HEADER, DELIMITER ',', FORMAT CSV);
