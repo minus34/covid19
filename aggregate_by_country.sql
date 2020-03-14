@@ -20,10 +20,10 @@ select cases.country_region,
        sum(recovered) as recovered,
        sum(active) as active,
        null::integer as population,
-       null::float as confirmed_percent,
-       null::float as deaths_percent,
-       null::float as recovered_percent,
-       null::float as active_percent,
+       null::float as confirmed_per_100k,
+       null::float as deaths_per_100k,
+       null::float as recovered_per_100k,
+       null::float as active_per_100k,
        null::smallint as population_year,
        avg(latitude)::numeric(8,6) as latitude,
 	   avg(longitude)::numeric(9,6) as longitude,
@@ -107,12 +107,12 @@ where co.country_region = pop.country_name
 
 --select * from covid19.countries where population is null;
 
--- get percentages of infection
+-- get rates of infection per 100,000 people
 update covid19.countries
-    set confirmed_percent = confirmed::float / population:: float * 100.0,
-	    deaths_percent = deaths::float / population:: float * 100.0,
-	    recovered_percent = recovered::float / population:: float * 100.0,
-	    active_percent = active::float / population:: float * 100.0;
+    set confirmed_per_100k = confirmed::float / population:: float * 100000.0,
+	    deaths_per_100k = deaths::float / population:: float * 100000.0,
+	    recovered_per_100k = recovered::float / population:: float * 100000.0,
+	    active_per_100k = active::float / population:: float * 100000.0;
 
 
 -- get current data by country
