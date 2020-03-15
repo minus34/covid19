@@ -25,6 +25,8 @@ def get_jhu_data():
 			
 	print("John Hopkins University files saved")
 
+	return files
+
 
 def get_world_bank_data():
 
@@ -37,14 +39,22 @@ def get_world_bank_data():
 		for chunk in r.iter_content(chunk_size=1024):
 			f.write(chunk)
 
+	wb_file = None
+
 	# extract data file from ZIP
 	with zipfile.ZipFile(path, 'r') as zip_ref:
-		zip_ref.extract("API_SP.POP.TOTL_DS2_en_csv_v2_821007.csv")
+		for info in zip_ref.infolist():
+			if info.filename.startswith("API_SP.POP"):
+				wb_file = info.filename
+				zip_ref.extract(info)
 
 	# delete ZIP file
 	os.remove(path)
 
 	print("World Bank file saved")
+
+	return wb_file
+
 
 # un-comment to just download the files:
 # get_jhu_data()

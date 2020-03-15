@@ -13,16 +13,8 @@ def clean_int(value):
 
 
 # download data files
-get_data.get_jhu_data()
-get_data.get_world_bank_data()
-
-jhu_files = [
-    "time_series_19-covid-Confirmed.csv",
-    "time_series_19-covid-Deaths.csv",
-    "time_series_19-covid-Recovered.csv"
-]
-
-wb_file = "API_SP.POP.TOTL_DS2_en_csv_v2_821007.csv"
+jhu_files = get_data.get_jhu_data()
+wb_file = get_data.get_world_bank_data()
 
 jhu_dict_list = list()
 
