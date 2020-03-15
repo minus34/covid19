@@ -50,16 +50,28 @@ with confirmed as (
 			 cases.the_date,
 			 latitude,
 			 longitude
+), active as (
+    select *,
+           confirmed - deaths - recovered as active,
+           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as daily_change,
+           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered, 7) over (partition by province_state, country_region order by the_date) as weekly_change
+    from merge
 )
 select *,
-       confirmed - deaths - recovered as active,
-	   ST_SetSRID(ST_Makepoint(longitude, latitude), 4326) as geom
-from merge
+       (case when lag(active) over (partition by province_state, country_region order by the_date) > 0 then daily_change::float /
+           (lag(active) over (partition by province_state, country_region order by the_date))::float * 100.0 end)::integer as daily_change_percent,
+       (case when lag(active, 7) over (partition by province_state, country_region order by the_date) > 0 then weekly_change::float /
+           (lag(active, 7) over (partition by province_state, country_region order by the_date))::float * 100.0 end)::integer as weekly_change_percent,
+       ST_SetSRID(ST_Makepoint(longitude, latitude), 4326) as geom
+from active
 order by the_date desc;
 
+ANALYSE covid19.cases;
 
---select * from covid19.countries
---order by country_region;
+--select * from covid19.cases
+--where country_region = 'China'
+--order by province_state, the_date
+--;
 
 
 -- load world population figures by country (source: World Bank - https://data.worldbank.org/indicator/SP.POP.TOTL)
