@@ -171,3 +171,9 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 COPY covid19.countries_current
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-current.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
+
+
+-- remove San Marino and The Vatican from countries tables as their cases per 100k are high off a small number of cases
+delete from covid19.countries where country_region in ('San Marino', 'Holy See');
+delete from covid19.countries_current where country_region in ('San Marino', 'Holy See');
+
