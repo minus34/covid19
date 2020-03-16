@@ -1,4 +1,34 @@
 
+
+-- update country names to match World Bank names
+update covid19.cases set country_region = 'Brunei Darussalam' where country_region = 'Brunei';
+update covid19.cases set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Kinshasa)';
+update covid19.cases set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Brazzaville)';
+update covid19.cases set country_region = 'Korea, Rep.' where country_region = 'Korea, South';
+update covid19.cases set country_region = 'United States' where country_region = 'US';
+update covid19.cases set country_region = 'Iran, Islamic Rep.' where country_region = 'Iran';
+update covid19.cases set country_region = 'Egypt, Arab Rep.' where country_region = 'Egypt';
+update covid19.cases set country_region = 'Russian Federation' where country_region = 'Russia';
+update covid19.cases set country_region = 'Czech Republic' where country_region = 'Czechia';
+update covid19.cases set country_region = 'Slovak Republic' where country_region = 'Slovakia';
+update covid19.cases set country_region = 'Taiwan' where country_region = 'Taiwan*';
+update covid19.cases set country_region = 'St. Lucia' where country_region = 'Saint Lucia';
+update covid19.cases set country_region = 'Venezuela, RB' where country_region = 'Venezuela';
+update covid19.cases set country_region = 'St. Vincent and the Grenadines' where country_region = 'Saint Vincent and the Grenadines';
+
+
+-- change these nearby territories to their "mother" country
+update covid19.cases
+    set province_state = country_region,
+        country_region = 'United Kingdom'
+where country_region = 'Jersey';
+
+update covid19.cases
+    set province_state = country_region,
+        country_region = 'United Kingdom'
+where country_region = 'Guernsey';
+
+
 -- aggregate case data by country and apply manual fixes to cleanup data
 DROP TABLE IF EXISTS covid19.countries;
 CREATE TABLE covid19.countries AS
@@ -42,24 +72,14 @@ ALTER TABLE covid19.countries CLUSTER ON countries_geom_idx;
 
 ANALYSE covid19.countries;
 
--- update country names to match World Bank names
-update covid19.countries set country_region = 'Brunei Darussalam' where country_region = 'Brunei';
-update covid19.countries set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Kinshasa)';
-update covid19.countries set country_region = 'Korea, Rep.' where country_region = 'Korea, South';
-update covid19.countries set country_region = 'United States' where country_region = 'US';
-update covid19.countries set country_region = 'Iran, Islamic Rep.' where country_region = 'Iran';
-update covid19.countries set country_region = 'Egypt, Arab Rep.' where country_region = 'Egypt';
-update covid19.countries set country_region = 'Russian Federation' where country_region = 'Russia';
-update covid19.countries set country_region = 'Czech Republic' where country_region = 'Czechia';
-update covid19.countries set country_region = 'Slovak Republic' where country_region = 'Slovakia';
-update covid19.countries set country_region = 'Taiwan' where country_region = 'Taiwan*';
-
 -- manually set populations
 update covid19.countries set population = 859959, population_year = 2020 where country_region = 'Reunion';
 update covid19.countries set population = 376480, population_year = 2016 where country_region = 'Martinique';
 update covid19.countries set population = 23780000, population_year = 2018 where country_region = 'Taiwan';
 update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
 update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
+update covid19.countries set population = 395700, population_year = 2016 where country_region = 'Guadeloupe';
+
 
 -- fix coords and geoms of countries with territories that skew their centroid
 update covid19.countries
