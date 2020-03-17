@@ -3,7 +3,8 @@
 -- update country names to match World Bank names
 update covid19.cases set country_region = 'Brunei Darussalam' where country_region = 'Brunei';
 update covid19.cases set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Kinshasa)';
-update covid19.cases set country_region = 'Congo, Dem. Rep.' where country_region = 'Congo (Brazzaville)';
+update covid19.cases set country_region = 'Congo, Rep.' where country_region = 'Congo (Brazzaville)';
+update covid19.cases set country_region = 'Congo, Rep.' where country_region = 'Republic of the Congo';
 update covid19.cases set country_region = 'Korea, Rep.' where country_region = 'Korea, South';
 update covid19.cases set country_region = 'United States' where country_region = 'US';
 update covid19.cases set country_region = 'Iran, Islamic Rep.' where country_region = 'Iran';
@@ -15,6 +16,8 @@ update covid19.cases set country_region = 'Taiwan' where country_region = 'Taiwa
 update covid19.cases set country_region = 'St. Lucia' where country_region = 'Saint Lucia';
 update covid19.cases set country_region = 'Venezuela, RB' where country_region = 'Venezuela';
 update covid19.cases set country_region = 'St. Vincent and the Grenadines' where country_region = 'Saint Vincent and the Grenadines';
+update covid19.cases set country_region = 'Bahamas, The' where country_region = 'The Bahamas';
+
 
 
 -- change these nearby territories to their "mother" country
@@ -79,6 +82,7 @@ update covid19.countries set population = 23780000, population_year = 2018 where
 update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
 update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
 update covid19.countries set population = 395700, population_year = 2016 where country_region = 'Guadeloupe';
+update covid19.countries set population = 270372, population_year = 2019 where country_region = 'Mayotte';
 
 
 -- fix coords and geoms of countries with territories that skew their centroid
@@ -164,11 +168,15 @@ analyse covid19.countries;
 
 -- output to CSVs
 
-COPY covid19.countries
+COPY (SELECT province_state, country_region, the_date, latitude, longitude, confirmed, deaths, recovered, active, daily_change, weekly_change, daily_change_percent, weekly_change_percent FROM covid19.cases)
+TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-cases.csv'
+WITH (HEADER, DELIMITER ',', FORMAT CSV);
+
+COPY (SELECT country_region, the_date, days_since_first_case, start_date, max_date, confirmed, deaths, recovered, active, population, confirmed_per_100k, deaths_per_100k, recovered_per_100k, active_per_100k, population_year, latitude, longitude FROM covid19.countries)
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
-COPY covid19.countries_current
+COPY (SELECT country_region, the_date, days_since_first_case, start_date, max_date, confirmed, deaths, recovered, active, population, confirmed_per_100k, deaths_per_100k, recovered_per_100k, active_per_100k, population_year, latitude, longitude FROM covid19.countries_current)
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-current.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
