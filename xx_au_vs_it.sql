@@ -12,6 +12,24 @@ where country_region = 'Italy'
 order by the_date;
 
 
+    select country_region
+    from covid19.countries
+    where population = 0
+
+
+
+
+select country_region,
+       confirmed,
+       (confirmed::float / (population::float / 1000000.0)) as confirmed_per_million,
+       the_date
+from covid19.countries
+where country_region = 'Australia'
+;
+
+
+
+
 
 with aus as (
     select *

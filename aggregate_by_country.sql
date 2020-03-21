@@ -33,7 +33,7 @@ where country_region = 'Guernsey';
 
 
 -- aggregate for countries with 100+ cases
-DROP TABLE IF EXISTS covid19.countries_100_plus;
+DROP TABLE IF EXISTS covid19.countries_100_plus cascade;
 CREATE TABLE covid19.countries_100_plus AS
 WITH cnty as (
     select country_region,
@@ -98,7 +98,7 @@ order by cnty.country_region,
 
 
 -- aggregate case data by country and apply manual fixes to cleanup data
-DROP TABLE IF EXISTS covid19.countries;
+DROP TABLE IF EXISTS covid19.countries CASCADE;
 CREATE TABLE covid19.countries AS
 WITH dte as (
     select country_region,
@@ -228,6 +228,30 @@ where cnt.country_region = curr.country_region;
 analyse covid19.countries;
 
 
+
+-- create view of days since 1 case per million
+drop view if exists covid19.vw_countries_1_per_million;
+create view covid19.vw_countries_1_per_million as
+with dte as (
+    select country_region,
+           min(the_date) as start_date
+    from covid19.countries
+    where confirmed::float / (population::float / 1000000.0) >= 1.0
+    group by country_region
+)
+select cases.country_region,
+       the_date,
+       the_date - dte.start_date as days_since_1_per_mil,
+       dte.start_date,
+       confirmed,
+       population,
+       (confirmed::float / (population::float / 1000000.0))::integer as cases_per_million
+from covid19.countries as cases
+inner join dte on cases.country_region = dte.country_region
+  and cases.the_date >= dte.start_date
+;
+
+
 -- output to CSVs
 
 COPY (SELECT province_state, country_region, the_date, latitude, longitude, confirmed, deaths, recovered, active, daily_change, weekly_change, daily_change_percent, weekly_change_percent FROM covid19.cases)
@@ -236,6 +260,18 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, the_date, days_since_100_cases, start_date, max_date, confirmed, deaths, recovered, active, latitude, longitude FROM covid19.countries_100_plus)
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-100-plus.csv'
+WITH (HEADER, DELIMITER ',', FORMAT CSV);
+
+COPY (
+    SELECT country_region,
+           days_since_1_per_mil,
+           confirmed,
+           population,
+           cases_per_million
+    FROM covid19.vw_countries_1_per_million
+    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore')
+)
+TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, days_since_100_cases, diff_to_aus, aus_active, active FROM covid19.vw_countries_100_plus)
