@@ -25,7 +25,14 @@ for filename in jhu_files:
     with open(filename, "r") as f:
         reader = csv.reader(f, delimiter=',')
 
-        status = filename.replace(".csv", "").split("-")[2].lower()
+        # fartarse around with filenames to get the data type (confirmed, recovered or deaths)
+        temp_filename = filename.replace("_global", "").replace(".csv", "").replace("_", "-")
+        temp_filename_parts = temp_filename.split("-")
+
+        if len(temp_filename_parts) > 4:
+            status = temp_filename_parts[4].lower()
+        else:
+            status = temp_filename_parts[3].lower()
 
         i = 0
         dates = list()

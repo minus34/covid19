@@ -9,8 +9,8 @@ import zipfile
 def get_jhu_data():
 
 	files = [
-		"time_series_19-covid-Confirmed.csv",
-		"time_series_19-covid-Deaths.csv",
+		"time_series_covid19_confirmed_global.csv",
+		"time_series_covid19_deaths_global.csv",
 		"time_series_19-covid-Recovered.csv"
 	]
 
