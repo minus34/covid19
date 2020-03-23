@@ -244,8 +244,14 @@ select cases.country_region,
        the_date - dte.start_date as days_since_1_per_mil,
        dte.start_date,
        confirmed,
+       active,
+       recovered,
+       deaths,
        population,
-       (confirmed::float / (population::float / 1000000.0))::integer as cases_per_million
+       (confirmed::float / (population::float / 1000000.0))::integer as cases_per_million,
+       (recovered::float / (population::float / 1000000.0))::integer as recovered_per_million,
+       (active::float / (population::float / 1000000.0))::integer as active_per_million,
+       (deaths::float / (population::float / 1000000.0))::integer as deaths_per_million
 from covid19.countries as cases
 inner join dte on cases.country_region = dte.country_region
   and cases.the_date >= dte.start_date
@@ -265,11 +271,18 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 COPY (
     SELECT country_region,
            days_since_1_per_mil,
+           start_date,
            confirmed,
+           active,
+           recovered,
+           deaths,
            population,
-           cases_per_million
+           cases_per_million,
+           recovered_per_million,
+           active_per_million,
+           deaths_per_million
     FROM covid19.vw_countries_1_per_million
-    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore')
+    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore', 'Iran, Islamic Rep.', 'Korea, Rep.')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
