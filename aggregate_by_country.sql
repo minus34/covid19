@@ -237,6 +237,7 @@ with dte as (
            min(the_date) as start_date
     from covid19.countries
     where confirmed::float / (population::float / 1000000.0) >= 1.0
+        and population > 1000000
     group by country_region
 )
 select cases.country_region,
@@ -282,7 +283,7 @@ COPY (
            active_per_million,
            deaths_per_million
     FROM covid19.vw_countries_1_per_million
-    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore', 'Iran, Islamic Rep.', 'Korea, Rep.')
+    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore', 'Iran, Islamic Rep.', 'Korea, Rep.', 'Austria', 'Switzerland')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
