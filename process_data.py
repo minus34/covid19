@@ -1,6 +1,7 @@
 
 import csv
 import get_data
+import os
 
 from datetime import datetime
 
@@ -14,7 +15,12 @@ def clean_int(value):
 
 # download data files
 jhu_files = get_data.get_jhu_data()
-wb_file = get_data.get_world_bank_data()
+# wb_file = get_data.get_world_bank_data()
+
+# UN 2020 Population Projections by Country (Copyright © United Nations)
+# https://population.un.org/wpp/Download/Standard/Population/
+un_file = 'input_files/un_2020_population_estimates_by_country.csv'
+
 
 jhu_dict_list = list()
 
@@ -22,7 +28,7 @@ jhu_dict_list = list()
 for filename in jhu_files:
     print("parsing {}".format(filename))
 
-    with open(filename, "r") as f:
+    with open(os.path.join("input_files", filename), "r") as f:
         reader = csv.reader(f, delimiter=',')
 
         # fartarse around with filenames to get the data type (confirmed, recovered or deaths)
@@ -73,7 +79,7 @@ print("JHU files parsed into dictionary list")
 # export dict list to CSV
 csv_columns = ["status", "province_state", "country_region", "latitude", "longitude", "the_date", "persons"]
 
-with open("time_series_19-covid-reformatted.csv", 'w') as csvfile:
+with open(os.path.join("output_files/", "time_series_19-covid-reformatted.csv"), 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
     writer.writeheader()
     for data in jhu_dict_list:
@@ -81,57 +87,90 @@ with open("time_series_19-covid-reformatted.csv", 'w') as csvfile:
 
 print("JHU data exported to CSV")
 
-
 # parse and reformat World Bank population data
-print("parsing {}".format(wb_file))
+print("parsing {}".format(un_file))
 
-wb_dict_list = list()
+un_dict_list = list()
 
-with open(wb_file, "r") as f:
+with open(un_file, "r") as f:
     reader = csv.reader(f, delimiter=',')
-
-    # ignore first 4 rows
-    for i in range(4):
-        next(reader)
-
-    i = 0
-    years = list()
+    next(reader, None)  # skip the header row
 
     # parse data into lists
     for row in reader:
-        if i == 0:
-            # get date list from column names
-            years = row[4:]
-        else:
-            # get values for each year
-            values = row[4:]
+        row_dict = dict()
 
-            j = 0
+        row_dict["country_name"] = row[0]
+        row_dict["country_code"] = int(row[1])
+        row_dict["year"] = 2020
 
-            for year in years:
-                if year != "":  # blank year in last column in CSV
-                    row_dict = dict()
+        string_pop = row[2].replace(" ", "")
+        row_dict["population"] = int(string_pop) * 1000
 
-                    row_dict["country_name"] = row[0]
-                    row_dict["country_code"] = row[1]
-                    row_dict["year"] = int(year)
-                    row_dict["population"] = clean_int(values[j])
+        un_dict_list.append(row_dict)
 
-                    wb_dict_list.append(row_dict)
-
-                j += 1
-        i += 1
-
-print("World Bank pop. file parsed into dictionary list")
+print("UN pop. file parsed into dictionary list")
 
 # export dict list to CSV
-csv_columns = ["country_name", "country_code", "year", "population",]
+csv_columns = ["country_name", "country_code", "year", "population"]
 
-with open("world-bank-population-reformatted.csv", 'w') as csvfile:
+with open(os.path.join("output_files/", "un-population-reformatted.csv"), 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
     writer.writeheader()
-    for data in wb_dict_list:
+    for data in un_dict_list:
         writer.writerow(data)
+
+
+# # parse and reformat World Bank population data
+# print("parsing {}".format(wb_file))
+#
+# wb_dict_list = list()
+#
+# with open(wb_file, "r") as f:
+#     reader = csv.reader(f, delimiter=',')
+#
+#     # ignore first 4 rows
+#     for i in range(4):
+#         next(reader)
+#
+#     i = 0
+#     years = list()
+#
+#     # parse data into lists
+#     for row in reader:
+#         if i == 0:
+#             # get date list from column names
+#             years = row[4:]
+#         else:
+#             # get values for each year
+#             values = row[4:]
+#
+#             j = 0
+#
+#             for year in years:
+#                 if year != "":  # blank year in last column in CSV
+#                     row_dict = dict()
+#
+#                     row_dict["country_name"] = row[0]
+#                     row_dict["country_code"] = row[1]
+#                     row_dict["year"] = int(year)
+#                     row_dict["population"] = clean_int(values[j])
+#
+#                     wb_dict_list.append(row_dict)
+#
+#                 j += 1
+#         i += 1
+#
+# print("World Bank pop. file parsed into dictionary list")
+#
+# # export dict list to CSV
+# csv_columns = ["country_name", "country_code", "year", "population",]
+#
+# with open("world-bank-population-reformatted.csv", 'w') as csvfile:
+#     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+#     writer.writeheader()
+#     for data in wb_dict_list:
+#         writer.writerow(data)
 
 # OPTIONAL: import data into Postgres
 

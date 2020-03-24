@@ -18,7 +18,7 @@ CREATE TABLE covid19.raw_cases
 ALTER TABLE covid19.raw_cases OWNER to postgres;
 
 COPY covid19.raw_cases (status, province_state, country_region, latitude, longitude, the_date, persons)
-FROM '/Users/hugh.saalmans/git/minus34/covid19/time_series_19-covid-reformatted.csv' WITH (HEADER, DELIMITER ',', FORMAT CSV);
+FROM '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-reformatted.csv' WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 ANALYSE covid19.raw_cases;
 
@@ -87,12 +87,13 @@ CREATE TABLE covid19.world_population
 ALTER TABLE covid19.world_population OWNER to postgres;
 
 COPY covid19.world_population
-FROM '/Users/hugh.saalmans/git/minus34/covid19/world-bank-population-reformatted.csv'
+FROM '/Users/hugh.saalmans/git/minus34/covid19/output_files/un-population-reformatted.csv'
+--FROM '/Users/hugh.saalmans/git/minus34/covid19/output_files/world-bank-population-reformatted.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 delete from covid19.world_population where population is null; -- get rid of nulls, will cause issues down the line
 
-ALTER TABLE covid19.world_population ADD CONSTRAINT world_population_pkey PRIMARY KEY (country_name, year);
+ALTER TABLE covid19.world_population ADD CONSTRAINT world_population_pkey PRIMARY KEY (country_name);
 
 analyse covid19.world_population;
 -- vacuum analyse covid19.world_population;

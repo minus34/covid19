@@ -20,7 +20,7 @@ def get_jhu_data():
 		url = "https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/{path}".format(path=path)
 		print("Getting", path)
 		r = requests.get(url, headers=headers)
-		with open(path, 'w') as f:
+		with open(os.path.join("input_files/", path), 'w') as f:
 			f.write(r.text)
 			
 	print("John Hopkins University files saved")
