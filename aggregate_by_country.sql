@@ -282,7 +282,7 @@ COPY (
            active_per_million,
            deaths_per_million
     FROM covid19.vw_countries_1_per_million
-    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States', 'United Kingdom', 'China', 'Singapore', 'Iran, Islamic Rep.', 'Korea, Rep.', 'Austria', 'Switzerland')
+    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
