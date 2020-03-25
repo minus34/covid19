@@ -10,26 +10,8 @@ update covid19.cases set country_region = 'United States of America' where count
 update covid19.cases set country_region = 'Iran' where country_region = 'Iran';
 update covid19.cases set country_region = 'Egypt' where country_region = 'Egypt';
 update covid19.cases set country_region = 'Russian Federation' where country_region = 'Russia';
---update covid19.cases set country_region = 'Czech Republic' where country_region = 'Czechia';
---update covid19.cases set country_region = 'Slovak Republic' where country_region = 'Slovakia';
 update covid19.cases set country_region = 'Taiwan' where country_region = 'Taiwan*';
---update covid19.cases set country_region = 'St. Lucia' where country_region = 'Saint Lucia';
---update covid19.cases set country_region = 'Venezuela, RB' where country_region = 'Venezuela';
---update covid19.cases set country_region = 'St. Vincent and the Grenadines' where country_region = 'Saint Vincent and the Grenadines';
---update covid19.cases set country_region = 'Bahamas, The' where country_region = 'The Bahamas';
-
-
-
----- change these nearby territories to their "mother" country
---update covid19.cases
---    set province_state = country_region,
---        country_region = 'United Kingdom'
---where country_region = 'Jersey';
---
---update covid19.cases
---    set province_state = country_region,
---        country_region = 'United Kingdom'
---where country_region = 'Guernsey';
+update covid19.cases set country_region = 'State of Palestine' where country_region = 'The West Bank and Gaza';
 
 
 -- aggregate for countries with 100+ cases
@@ -139,15 +121,6 @@ CREATE INDEX countries_geom_idx ON covid19.countries USING gist (geom);
 ALTER TABLE covid19.countries CLUSTER ON countries_geom_idx;
 
 ANALYSE covid19.countries;
-
--- manually set populations
---update covid19.countries set population = 859959, population_year = 2020 where country_region = 'Reunion';
---update covid19.countries set population = 376480, population_year = 2016 where country_region = 'Martinique';
---update covid19.countries set population = 23780000, population_year = 2018 where country_region = 'Taiwan';
---update covid19.countries set population = 290691, population_year = 2020 where country_region = 'French Guiana';
---update covid19.countries set population = 1000, population_year = 2017 where country_region = 'Holy See';
---update covid19.countries set population = 395700, population_year = 2016 where country_region = 'Guadeloupe';
---update covid19.countries set population = 270372, population_year = 2019 where country_region = 'Mayotte';
 
 
 -- fix coords and geoms of countries with territories that skew their centroid
