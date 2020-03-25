@@ -195,7 +195,7 @@ pg_cur.execute(sql)
 print("Country table created with cases and population data")
 
 # check for countries that have no population data
-sql = "select country_region from covid19.countries where population is null"
+sql = "select country_region from covid19.countries where population is null and country_region <> 'Diamond Princess'"
 pg_cur.execute(sql)
 rows = pg_cur.fetchall()
 
