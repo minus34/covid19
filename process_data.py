@@ -63,11 +63,11 @@ for filename in jhu_files:
                     row_dict["latitude"] = float(row[2])
                     row_dict["longitude"] = float(row[3])
 
-                    # convert date to standard format -- temp bug in resolved data need to be overcome
-                    if status == "recovered":
-                        the_date = datetime.strptime(date, '%m/%d/%Y')
-                    else:
-                        the_date = datetime.strptime(date, '%m/%d/%y')
+                    # # convert date to standard format -- temporary bug in resolved data need to be overcome
+                    # if status == "recovered":
+                    #     the_date = datetime.strptime(date, '%m/%d/%Y')
+                    # else:
+                    the_date = datetime.strptime(date, '%m/%d/%y')
 
                     row_dict["the_date"] = the_date
                     row_dict["persons"] = clean_int(values[j])
