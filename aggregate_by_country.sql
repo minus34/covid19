@@ -277,5 +277,8 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 delete from covid19.countries where country_region in ('San Marino', 'Holy See');
 delete from covid19.countries_current where country_region in ('San Marino', 'Holy See');
 
--- remove the cuise shaip data
+-- remove the cruise shaip data
 delete from covid19.countries where country_region = 'Cruise Ship';
+
+
+select * from covid19.cases;

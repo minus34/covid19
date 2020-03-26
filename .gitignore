@@ -1,6 +1,6 @@
 /plots
 /__pycache__
 .DS_Store
-/input_files/time_series_19-covid-Recovered.csv
 /input_files/time_series_covid19_confirmed_global.csv
 /input_files/time_series_covid19_deaths_global.csv
+/input_files/time_series_covid19_recovered_global.csv

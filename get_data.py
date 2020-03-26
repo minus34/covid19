@@ -9,15 +9,15 @@ import zipfile
 def get_jhu_data():
 
 	files = [
+		"time_series_covid19_recovered_global.csv",
 		"time_series_covid19_confirmed_global.csv",
-		"time_series_covid19_deaths_global.csv",
-		"time_series_19-covid-Recovered.csv"
+		"time_series_covid19_deaths_global.csv"
 	]
 
 	headers = {'Accept': 'application/vnd.github.v3.raw'}
 
 	for path in files:
-		url = "https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/{path}".format(path=path)
+		url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/{path}".format(path=path)
 		print("Getting", path)
 		r = requests.get(url, headers=headers)
 		with open(os.path.join("input_files/", path), 'w') as f:

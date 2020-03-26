@@ -35,10 +35,10 @@ for filename in jhu_files:
         temp_filename = filename.replace("_global", "").replace(".csv", "").replace("_", "-")
         temp_filename_parts = temp_filename.split("-")
 
-        if len(temp_filename_parts) > 4:
-            status = temp_filename_parts[4].lower()
-        else:
-            status = temp_filename_parts[3].lower()
+        # if len(temp_filename_parts) > 4:
+        status = temp_filename_parts[3].lower()
+        # else:
+        #     status = temp_filename_parts[3].lower()
 
         i = 0
         dates = list()
@@ -63,8 +63,11 @@ for filename in jhu_files:
                     row_dict["latitude"] = float(row[2])
                     row_dict["longitude"] = float(row[3])
 
-                    # convert date to standard format
-                    the_date = datetime.strptime(date, '%m/%d/%y')
+                    # convert date to standard format -- temp bug in resolved data need to be overcome
+                    if status == "recovered":
+                        the_date = datetime.strptime(date, '%m/%d/%Y')
+                    else:
+                        the_date = datetime.strptime(date, '%m/%d/%y')
 
                     row_dict["the_date"] = the_date
                     row_dict["persons"] = clean_int(values[j])
