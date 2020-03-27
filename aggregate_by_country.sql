@@ -212,24 +212,37 @@ with dte as (
     where confirmed::float / (population::float / 1000000.0) >= 1.0
         and population > 1000000
     group by country_region
-)
+), data as (
 select cases.country_region,
        the_date,
        the_date - dte.start_date as days_since_1_per_mil,
        dte.start_date,
        confirmed,
-       active,
        recovered,
+       active,
        deaths,
        population,
-       (confirmed::float / (population::float / 1000000.0))::integer as cases_per_million,
-       (recovered::float / (population::float / 1000000.0))::integer as recovered_per_million,
-       (active::float / (population::float / 1000000.0))::integer as active_per_million,
-       (deaths::float / (population::float / 1000000.0))::integer as deaths_per_million
+       (confirmed::float / (population::float / 1000000.0))::numeric(10, 1) as cases_per_million,
+       (recovered::float / (population::float / 1000000.0))::numeric(10, 1) as recovered_per_million,
+       (active::float / (population::float / 1000000.0))::numeric(10, 1) as active_per_million,
+       (deaths::float / (population::float / 1000000.0))::numeric(10, 1) as deaths_per_million
 from covid19.countries as cases
 inner join dte on cases.country_region = dte.country_region
   and cases.the_date >= dte.start_date
+)
+select *,
+       avg(confirmed) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as confirmed_3_day,
+       avg(recovered) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as recovered_3_day,
+       avg(active) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as active_3_day,
+       avg(deaths) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as deaths_3_day,
+       avg(cases_per_million) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as cases_per_million_3_day,
+       avg(recovered_per_million) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as recovered_per_million_3_day,
+       avg(active_per_million) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as active_per_million_3_day,
+       avg(deaths_per_million) over (partition by country_region order by the_date rows between 2 preceding and current row)::numeric(10, 1) as deaths_per_million_3_day
+from data
 ;
+
+--select * from covid19.vw_countries_1_per_million;
 
 -- output to CSVs
 
@@ -242,19 +255,7 @@ TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-b
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (
-    SELECT country_region,
-           days_since_1_per_mil,
-           start_date,
-           confirmed,
-           active,
-           recovered,
-           deaths,
-           population,
-           cases_per_million,
-           recovered_per_million,
-           active_per_million,
-           deaths_per_million
-    FROM covid19.vw_countries_1_per_million
+    SELECT * FROM covid19.vw_countries_1_per_million
     WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-1-per-million.csv'
