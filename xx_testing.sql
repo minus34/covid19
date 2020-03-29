@@ -1,5 +1,26 @@
 
 
+-- percentage increases for Australia
+with active as (
+    select country_region,
+           the_date,
+           active,
+           (active) - lag(active) over (partition by country_region order by the_date) as daily_change,
+           (active) - lag(active, 7) over (partition by country_region order by the_date) as weekly_change
+    from covid19.countries
+    where country_region = 'Australia'
+)
+select *,
+       (case when lag(active) over (partition by country_region order by the_date) > 0 then daily_change::float /
+           (lag(active) over (partition by country_region order by the_date))::float * 100.0 end)::integer as daily_change_percent,
+       (case when lag(active, 7) over (partition by country_region order by the_date) > 0 then weekly_change::float /
+           (lag(active, 7) over (partition by country_region order by the_date))::float * 100.0 end)::integer as weekly_change_percent
+from active
+order by the_date;
+
+
+
+
 -- it took Australia 7 days to go from 100 to 1,000 (if JHU data has correct dates?)
 select *
 from covid19.countries_100_plus

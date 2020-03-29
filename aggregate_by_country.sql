@@ -256,7 +256,7 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (
     SELECT * FROM covid19.vw_countries_1_per_million
-    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia')
+    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia', 'India')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
@@ -280,6 +280,3 @@ delete from covid19.countries_current where country_region in ('San Marino', 'Ho
 
 -- remove the cruise shaip data
 delete from covid19.countries where country_region = 'Cruise Ship';
-
-
-select * from covid19.cases;
