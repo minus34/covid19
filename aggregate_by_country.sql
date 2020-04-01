@@ -256,7 +256,7 @@ WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (
     SELECT * FROM covid19.vw_countries_1_per_million
-    WHERE country_region in ('Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia', 'India')
+    WHERE country_region in ('New Zealand', 'Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia', 'India')
 )
 TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
