@@ -12,6 +12,7 @@ update covid19.cases set country_region = 'Egypt' where country_region = 'Egypt'
 update covid19.cases set country_region = 'Russian Federation' where country_region = 'Russia';
 update covid19.cases set country_region = 'Taiwan' where country_region = 'Taiwan*';
 update covid19.cases set country_region = 'State of Palestine' where country_region = 'West Bank and Gaza';
+update covid19.cases set country_region = 'Myanmar' where country_region = 'Burma';
 
 
 -- aggregate for countries with 100+ cases
