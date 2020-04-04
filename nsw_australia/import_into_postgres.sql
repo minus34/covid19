@@ -48,30 +48,41 @@ ANALYSE covid19.nsw_cases;
 ALTER TABLE covid19.nsw_cases ADD CONSTRAINT nsw_cases_pkey PRIMARY KEY (notification_date, postcode);
 
 
+
+-- -- create  table of unique address points, based on population (source table built using gnaf-loader code)
+--DROP TABLE IF EXISTS covid19.nsw_points;
+--CREATE TABLE covid19.nsw_points AS
+--select postcode,
+--       count(*) as population,
+--       geom
+--from testing.address_principals_persons
+--where left(mb_2016_code::text, 1) = '1'
+--group by postcode,
+--         geom;
+--
+--create index nsw_points_postcode_idx on covid19.nsw_points using btree (postcode);
+
+
 -- get one person point per case
 DROP TABLE IF EXISTS covid19.nsw_cases_points;
 CREATE TABLE covid19.nsw_cases_points AS
-WITH adr AS (
-SELECT nsw.*,
-       pop.geom
-from covid19.nsw_cases as nsw
-inner join testing.address_principals_persons as pop on nsw.postcode = pop.postcode
-), row_nums as (
- SELECT *, row_number() OVER (PARTITION BY postcode ORDER BY random()) as row_num
- FROM adr
+WITH row_nums as (
+    SELECT *, row_number() OVER (PARTITION BY postcode ORDER BY random()) as row_num
+    FROM covid19.nsw_points
 )
-SELECT *
-FROM row_nums
-WHERE row_num <= cases
-ORDER BY postcode,
-      row_num
+SELECT nsw.*,
+       row_nums.geom
+from covid19.nsw_cases as nsw
+inner join row_nums on nsw.postcode = row_nums.postcode
+WHERE row_num <= nsw.cases
 ;
 
 ANALYSE covid19.nsw_cases_points;
 
 
 
-select *
-from covid19.nsw_cases as nsw
-inner join testing.address_principals_persons as pop on nsw.postcode = pop.postcode;
+
+--select *
+--from covid19.nsw_cases as nsw
+--inner join testing.address_principals_persons as pop on nsw.postcode = pop.postcode;
 
