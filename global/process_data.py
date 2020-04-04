@@ -19,7 +19,7 @@ jhu_files = get_data.get_jhu_data()
 
 # UN 2020 Population Projections by Country (Copyright © United Nations)
 # https://population.un.org/wpp/Download/Standard/Population/
-un_file = 'input_files/un_2020_population_estimates_by_country.csv'
+un_file = 'global/input_files/un_2020_population_estimates_by_country.csv'
 
 
 jhu_dict_list = list()
@@ -28,7 +28,7 @@ jhu_dict_list = list()
 for filename in jhu_files:
     print("parsing {}".format(filename))
 
-    with open(os.path.join("input_files", filename), "r") as f:
+    with open(os.path.join("global", "input_files", filename), "r") as f:
         reader = csv.reader(f, delimiter=',')
 
         # fartarse around with filenames to get the data type (confirmed, recovered or deaths)
@@ -82,7 +82,7 @@ print("JHU files parsed into dictionary list")
 # export dict list to CSV
 csv_columns = ["status", "province_state", "country_region", "latitude", "longitude", "the_date", "persons"]
 
-with open(os.path.join("output_files/", "time_series_19-covid-reformatted.csv"), 'w') as csvfile:
+with open(os.path.join("global", "output_files/", "time_series_19-covid-reformatted.csv"), 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
     writer.writeheader()
     for data in jhu_dict_list:
@@ -117,7 +117,7 @@ print("UN pop. file parsed into dictionary list")
 # export dict list to CSV
 csv_columns = ["country_name", "country_code", "year", "population"]
 
-with open(os.path.join("output_files/", "un-population-reformatted.csv"), 'w') as csvfile:
+with open(os.path.join("global", "output_files/", "un-population-reformatted.csv"), 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
     writer.writeheader()
     for data in un_dict_list:
@@ -186,13 +186,13 @@ pg_conn.autocommit = True
 pg_cur = pg_conn.cursor()
 
 # import data
-sql = open("import_into_postgres.sql", "r").read()
+sql = open("global/import_into_postgres.sql", "r").read()
 pg_cur.execute(sql)
 
 print("Data imported into postgres")
 
 # aggregate data by country and add population data
-sql = open("aggregate_by_country.sql", "r").read()
+sql = open("global/aggregate_by_country.sql", "r").read()
 pg_cur.execute(sql)
 
 print("Country table created with cases and population data")

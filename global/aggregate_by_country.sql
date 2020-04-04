@@ -248,30 +248,30 @@ from data
 -- output to CSVs
 
 COPY (SELECT province_state, country_region, the_date, latitude, longitude, confirmed, deaths, recovered, active, daily_change, weekly_change, daily_change_percent, weekly_change_percent FROM covid19.cases)
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-cases.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-cases.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, the_date, days_since_100_cases, start_date, max_date, confirmed, deaths, recovered, active, latitude, longitude FROM covid19.countries_100_plus)
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-100-plus.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-by-country-100-plus.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (
     SELECT * FROM covid19.vw_countries_1_per_million
     WHERE country_region in ('New Zealand', 'Australia', 'Italy', 'Germany', 'Spain', 'France', 'United States of America', 'United Kingdom', 'China', 'Singapore', 'Iran', 'South Korea', 'Austria', 'Switzerland', 'Norway', 'Indonesia', 'India')
 )
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-1-per-million.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-by-country-1-per-million.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, days_since_100_cases, diff_to_aus, aus_active, active FROM covid19.vw_countries_100_plus)
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-100-plus-view.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-by-country-100-plus-view.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, the_date, days_since_first_case, start_date, max_date, confirmed, deaths, recovered, active, population, confirmed_per_100k, deaths_per_100k, recovered_per_100k, active_per_100k, population_year, latitude, longitude FROM covid19.countries)
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-by-country.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 COPY (SELECT country_region, the_date, days_since_first_case, start_date, max_date, confirmed, deaths, recovered, active, population, confirmed_per_100k, deaths_per_100k, recovered_per_100k, active_per_100k, population_year, latitude, longitude FROM covid19.countries_current)
-TO '/Users/hugh.saalmans/git/minus34/covid19/output_files/time_series_19-covid-by-country-current.csv'
+TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-by-country-current.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
 
