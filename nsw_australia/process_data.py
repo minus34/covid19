@@ -1,9 +1,5 @@
 
-import csv
 import os
-
-from datetime import datetime
-
 import psycopg2
 import requests
 
