@@ -44,7 +44,10 @@ ALTER TABLE covid19.nsw_cases OWNER to postgres;
 
 ANALYSE covid19.nsw_cases;
 
-ALTER TABLE covid19.nsw_cases ADD CONSTRAINT nsw_cases_pkey PRIMARY KEY (notification_date, postcode);
+ALTER TABLE covid19.nsw_cases ADD CONSTRAINT nsw_cases_pkey PRIMARY KEY (postcode);
+
+
+
 
 
 
@@ -102,6 +105,48 @@ inner join admin_bdys_201911.postcode_bdys_display as bdys on pc.postcode = bdys
 ;
 
 ANALYSE covid19.nsw_cases_postcodes;
+
+
+
+-- get postcode bdys for each day for a time series map
+-- group postcodes by day to get case counts
+DROP TABLE IF EXISTS covid19.nsw_cases_daily_postcodes;
+CREATE TABLE covid19.nsw_cases_daily_postcodes AS
+WITH pc as (
+    SELECT sum(population) as population,
+           postcode
+    FROM covid19.nsw_points
+    GROUP BY postcode
+), cases as (
+    SELECT postcode,
+           notification_date,
+           row_number() OVER (PARTITION BY postcode ORDER BY notification_date) as total_cases
+    from covid19.raw_nsw_cases
+), nsw as (
+   SELECT postcode,
+          notification_date,
+          max(total_cases) as total_cases
+   FROM cases
+   GROUP BY postcode,
+            notification_date
+)
+SELECT nsw.*,
+       pc.population,
+       (nsw.total_cases::float / pc.population::float * 100.0)::numeric(6, 3) as percent_infected,
+       bdys.geom
+from nsw
+inner join pc on nsw.postcode = pc.postcode
+inner join admin_bdys_201911.postcode_bdys_display as bdys on pc.postcode = bdys.postcode
+;
+
+ALTER TABLE covid19.nsw_cases_daily_postcodes OWNER to postgres;
+
+ANALYSE covid19.nsw_cases_daily_postcodes;
+
+--ALTER TABLE covid19.nsw_cases_daily_postcodes ADD CONSTRAINT nsw_cases_daily_postcodes_pkey PRIMARY KEY (notification_date, postcode);
+
+--select * from covid19.nsw_cases_daily_postcodes
+--where postcode = '2540' and notification_date = '2020-03-31'
 
 
 --select * from covid19.nsw_cases_postcodes order by cases desc;
