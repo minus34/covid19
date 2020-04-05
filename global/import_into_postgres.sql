@@ -53,14 +53,15 @@ with confirmed as (
 ), active as (
     select *,
            confirmed - deaths - recovered as active,
-           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as daily_change,
-           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered, 7) over (partition by province_state, country_region order by the_date) as weekly_change
+           lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as previous_active,
+           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as daily_active_change,
+           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered, 7) over (partition by province_state, country_region order by the_date) as weekly_active_change
     from merge
 )
 select *,
-       (case when lag(active) over (partition by province_state, country_region order by the_date) > 0 then daily_change::float /
+       (case when lag(active) over (partition by province_state, country_region order by the_date) > 0 then daily_active_change::float /
            (lag(active) over (partition by province_state, country_region order by the_date))::float * 100.0 end)::integer as daily_change_percent,
-       (case when lag(active, 7) over (partition by province_state, country_region order by the_date) > 0 then weekly_change::float /
+       (case when lag(active, 7) over (partition by province_state, country_region order by the_date) > 0 then weekly_active_change::float /
            (lag(active, 7) over (partition by province_state, country_region order by the_date))::float * 100.0 end)::integer as weekly_change_percent,
        ST_SetSRID(ST_Makepoint(longitude, latitude), 4326) as geom
 from active
