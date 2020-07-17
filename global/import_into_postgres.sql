@@ -54,9 +54,10 @@ with confirmed as (
     select *,
            confirmed - deaths - recovered as active,
            lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as previous_active,
-           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date) as daily_active_change,
-           recovered - lag(recovered) over (partition by province_state, country_region order by the_date) as daily_recovered_change,
-           deaths - lag(deaths) over (partition by province_state, country_region order by the_date) as daily_deaths_change
+           ((confirmed - deaths - recovered) - lag(confirmed - deaths - recovered) over (partition by province_state, country_region order by the_date))::float as daily_active_change,
+           (recovered - lag(recovered) over (partition by province_state, country_region order by the_date))::float as daily_recovered_change,
+           (deaths - lag(deaths) over (partition by province_state, country_region order by the_date))::float as daily_deaths_change,
+           (confirmed - lag(confirmed) over (partition by province_state, country_region order by the_date))::float as daily_cases_change
 --           (confirmed - deaths - recovered) - lag(confirmed - deaths - recovered, 7) over (partition by province_state, country_region order by the_date) as weekly_active_change
     from merge
 )

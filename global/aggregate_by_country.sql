@@ -247,7 +247,7 @@ from data
 
 -- output to CSVs
 
-COPY (SELECT province_state, country_region, the_date, latitude, longitude, confirmed, deaths, recovered, active, previous_active, daily_active_change, daily_deaths_change, daily_recovered_change  FROM covid19.cases)
+COPY (SELECT province_state, country_region, the_date, latitude, longitude, confirmed, deaths, recovered, active, previous_active, daily_active_change, daily_deaths_change, daily_recovered_change, daily_cases_change  FROM covid19.cases)
 TO '/Users/hugh.saalmans/git/minus34/covid19/global/output_files/time_series_19-covid-cases.csv'
 WITH (HEADER, DELIMITER ',', FORMAT CSV);
 
