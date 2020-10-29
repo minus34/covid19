@@ -10,7 +10,7 @@ def clean_int(value):
     if value == '':
         return None
     else:
-        return int(value)
+        return int(float(value))
 
 
 # download data files
