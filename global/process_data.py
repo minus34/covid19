@@ -60,8 +60,12 @@ for filename in jhu_files:
                     row_dict["status"] = status
                     row_dict["province_state"] = row[0]
                     row_dict["country_region"] = row[1]
-                    row_dict["latitude"] = float(row[2])
-                    row_dict["longitude"] = float(row[3])
+
+                    try:
+                        row_dict["latitude"] = float(row[2])
+                        row_dict["longitude"] = float(row[3])
+                    except:
+                        print("WARNING: failed to import row : {}".format(row))
 
                     # # convert date to standard format -- temporary bug in resolved data need to be overcome
                     # if status == "recovered":
